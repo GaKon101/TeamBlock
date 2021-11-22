@@ -18,7 +18,7 @@ func addBlock(character, location):
 		extendBlock.transform.origin = Vector3(location.x - MainBlock.point.x, 0.5, location.y - MainBlock.point.z)
 		extendBlock.connect("collide", self, "on_collide")
 		MainBlock.add_child(extendBlock)
-		addBlock("0", location)
+		addBlock("o", location)
 	
 	elif character == "3":
 		var target = Target.instance()
@@ -37,15 +37,15 @@ func addBlock(character, location):
 		block.transform.origin = Vector3(location.x, 1, location.y)
 		block.name = "Block("+str(location.x)+","+str(location.y)+")"
 		add_child(block)
-		addBlock("0", location)
+		addBlock("o", location)
 	
-	elif character == "5":
+	elif character == "x":
 		var wall = Wall.instance()
 		add_child(wall)
 		$wall.transform.origin = Vector3(location.x, 1, location.y)
 		$wall.name = "Block("+str(location.x)+","+str(location.y)+")"
 
-	elif character == "0":
+	elif character == "o":
 		var ground = Ground.instance()
 		add_child(ground)
 		$ground.transform.origin = Vector3(location.x, 0.5, location.y)
@@ -53,9 +53,8 @@ func addBlock(character, location):
 
 func read_file(filename):
 	var file = File.new()
-	#file.open("..//level//" + filename, File.READ)
-	file.open("..//level//" + filename, File.READ)	
-	var line = file.get_csv_line()
+	file.open(Autoload.path + filename, File.READ)	
+	var line
 	while !file.eof_reached():
 		line = file.get_csv_line()
 		if line.size() > 1:
@@ -75,7 +74,7 @@ func generate_map():
 			addBlock(character, Vector2(i,-j))
 			
 func _ready():
-	read_file(Autoload.current_level)
+	read_file(Autoload.files[Autoload.current_level])
 	generate_map()
 	
 func on_collide(obj, geo):
@@ -85,4 +84,15 @@ func _on_Button_pressed():
 	Autoload.full_reset()
 	get_tree().change_scene("res://scene/level.tscn")
 
+func _on_Button2_pressed():
+	if Autoload.current_level != 0:
+		Autoload.current_level -= 1
+	Autoload.full_reset()
+	get_tree().change_scene("res://scene/level.tscn")
 
+
+func _on_Button3_pressed():
+	if Autoload.current_level != len(Autoload.files) -1:
+		Autoload.current_level += 1
+	Autoload.full_reset()
+	get_tree().change_scene("res://scene/level.tscn")
